@@ -1,0 +1,42 @@
+# Use this cell to begin your analysis, and add as many as you would like!
+
+# Load needed libraries
+library("readxl")
+library("dplyr")
+library("stringr")
+library("lubridate")
+
+# Import needed data files
+prices <- read.csv("datasets/airbnb_price.csv")
+room_types <- read_excel("datasets/airbnb_room_type.xlsx")
+last_reviews <- read.delim("datasets/airbnb_last_review.tsv")
+
+# Create variable "avg_price" after cleaning data
+prices <- prices %>%
+    mutate(price = str_replace(price, " dollars", "")) %>%
+    mutate(price = as.numeric(price))
+
+avg_price <- mean(prices$price) # ANSWER TO QUESTION ONE
+
+# Create variable "nb_private_rooms" after cleaning data
+room_types <- room_types %>%
+    mutate(room_type = tolower(room_type))
+    
+private_rooms <- room_types %>%
+    filter(room_type == "private room") %>%
+    count(room_type) %>%
+    rename(count = n)
+
+nb_private_rooms <- mean(private_rooms$count) # ANSWER TO QUESTION TWO
+
+# Create variable "review_dates" after cleaning data
+
+last_reviews <- last_reviews %>%
+    mutate(last_review = mdy(last_review))
+
+oldest_review <- min(last_reviews$last_review)
+most_recent_review <- max(last_reviews$last_review)
+
+as_data_frame <- data.frame(first_reviewed = oldest_review, last_reviewed = most_recent_review)
+
+review_dates <- as_tibble(as_data_frame) # ANSWER TO QUESTION THREE
