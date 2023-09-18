@@ -1,4 +1,4 @@
-# Use this cell to begin your analysis, and add as many as you would like!
+# COSC 375 Project written in R for Dr. Beau Christ
 
 # Load needed libraries
 library("readxl")
