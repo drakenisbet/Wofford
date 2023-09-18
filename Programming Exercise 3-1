@@ -1,0 +1,53 @@
+#include <iostream>
+
+// part #1
+#include <fstream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+int main() {
+// part #2
+    ifstream inFile;
+    ofstream outFile;
+
+// part #3
+    inFile.open("inData.txt");
+    outFile.open("outData.txt");
+   
+// part #4
+    string FirstNam, LastNam, Depart;
+    double GrossSal, Bonus, TaxRate;
+    double TravelDist, TravelTime; 
+    int CupsSold;
+    double CupCost; 
+
+    outFile << fixed << showpoint << setprecision(2);
+
+    inFile >> FirstNam >> LastNam >> Depart;
+    inFile >> GrossSal >> Bonus >> TaxRate;
+
+    outFile << "Name: " << FirstNam << " " << LastNam << ", Department: " << Depart << endl; 
+    outFile << "Monthly Gross Salary: $" << GrossSal << ", Monthly Bonus: " << Bonus << "%, Taxes: " << TaxRate << "%" << endl;
+    outFile << "Paycheck: $" << GrossSal * (1 + Bonus / 100) * (1 - TaxRate / 100) << endl;
+    outFile << endl;
+
+    inFile >> TravelDist >> TravelTime;
+
+    outFile << "Distance Traveled: " << TravelDist << " miles, Traveling Time: " << TravelTime << " hours" << endl;
+    outFile << "Average Speed: " << TravelDist / TravelTime << " miles per hour" << endl;
+    outFile << endl;
+
+    inFile >> CupsSold >> CupCost;
+
+    outFile << "Number of Coffee Cups Sold: " << CupsSold << ", Cost: $" << CupCost << " per cup" << endl;
+    outFile << "Sales Amount = $" << CupsSold * CupCost << endl;
+
+// part #5
+    inFile.close();
+    outFile.close();
+
+// return
+    return 0;
+}
