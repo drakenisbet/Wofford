@@ -1,6 +1,6 @@
 #include <iostream>
 
-// part #1
+// Part #1
 #include <fstream>
 #include <string>
 #include <iomanip>
@@ -8,15 +8,15 @@
 using namespace std;
 
 int main() {
-// part #2
+// Part #2
     ifstream inFile;
     ofstream outFile;
 
-// part #3
+// Part #3
     inFile.open("inData.txt");
     outFile.open("outData.txt");
    
-// part #4
+// Part #4
     string FirstNam, LastNam, Depart;
     double GrossSal, Bonus, TaxRate;
     double TravelDist, TravelTime; 
@@ -44,10 +44,9 @@ int main() {
     outFile << "Number of Coffee Cups Sold: " << CupsSold << ", Cost: $" << CupCost << " per cup" << endl;
     outFile << "Sales Amount = $" << CupsSold * CupCost << endl;
 
-// part #5
+// Part #5
     inFile.close();
     outFile.close();
 
-// return
     return 0;
 }
