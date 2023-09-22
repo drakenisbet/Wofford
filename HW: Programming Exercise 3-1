@@ -19,32 +19,32 @@ int main() {
     outFile.open("outData.txt");
    
 // Part #4
-    string FirstNam, LastNam, Depart;
-    double GrossSal, Bonus, TaxRate;
-    double TravelDist, TravelTime; 
-    int CupsSold;
-    double CupCost; 
+    string firstNam, lastNam, depart;
+    double grossSal, bonus, taxRate;
+    double travelDist, travelTime; 
+    int cupsSold;
+    double cupCost; 
 
     outFile << fixed << showpoint << setprecision(2);
 
-    inFile >> FirstNam >> LastNam >> Depart;
-    inFile >> GrossSal >> Bonus >> TaxRate;
+    inFile >> firstNam >> lastNam >> depart;
+    inFile >> grossSal >> bonus >> taxRate;
 
-    outFile << "Name: " << FirstNam << " " << LastNam << ", Department: " << Depart << endl; 
-    outFile << "Monthly Gross Salary: $" << GrossSal << ", Monthly Bonus: " << Bonus << "%, Taxes: " << TaxRate << "%" << endl;
-    outFile << "Paycheck: $" << GrossSal * (1 + Bonus / 100) * (1 - TaxRate / 100) << endl;
+    outFile << "Name: " << firstNam << " " << lastNam << ", Department: " << depart << endl; 
+    outFile << "Monthly Gross Salary: $" << grossSal << ", Monthly Bonus: " << bonus << "%, Taxes: " << taxRate << "%" << endl;
+    outFile << "Paycheck: $" << grossSal * (1 + bonus / 100) * (1 - taxRate / 100) << endl;
     outFile << endl;
 
-    inFile >> TravelDist >> TravelTime;
+    inFile >> travelDist >> travelTime;
 
-    outFile << "Distance Traveled: " << TravelDist << " miles, Traveling Time: " << TravelTime << " hours" << endl;
-    outFile << "Average Speed: " << TravelDist / TravelTime << " miles per hour" << endl;
+    outFile << "Distance Traveled: " << travelDist << " miles, Traveling Time: " << travelTime << " hours" << endl;
+    outFile << "Average Speed: " << travelDist / travelTime << " miles per hour" << endl;
     outFile << endl;
 
-    inFile >> CupsSold >> CupCost;
+    inFile >> cupsSold >> cupCost;
 
-    outFile << "Number of Coffee Cups Sold: " << CupsSold << ", Cost: $" << CupCost << " per cup" << endl;
-    outFile << "Sales Amount = $" << CupsSold * CupCost << endl;
+    outFile << "Number of Coffee Cups Sold: " << cupsSold << ", Cost: $" << cupCost << " per cup" << endl;
+    outFile << "Sales Amount = $" << cupsSold * cupCost << endl;
 
 // Part #5
     inFile.close();
