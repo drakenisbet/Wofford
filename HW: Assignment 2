@@ -23,7 +23,6 @@ CHIP ALU {
         out[16]; // 16-bit output
 
     PARTS:
-        // ECR
         Or16(a=x, b=y, out=orOut);
         And16(a=x, b=y, out=nandOut1);
         Not16(in=nandOut1, out=nandOut);
