@@ -1,0 +1,40 @@
+// COSC 273 Assignment 2 written in HDL by Drake Nisbet for Dr. Aaron Garrett
+
+/**
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions on two 16-bit inputs:
+ * 000. OR    (bitwise OR)
+ * 001. NAND  (bitwise NAND)
+ * 010. NOR   (bitwise NOR)
+ * 011. AND   (bitwise AND)
+ * 100. ADD   (integer 2's complement addition)
+ * 101. SUB   (integer 2's complement subtraction)
+ * 110. NOT x (bitwise NOT x)
+ * 111. NOT y (bitwise NOT y)
+ * according to the 3 low-order bits of the 8-bit operation input.
+ */
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs
+        op[8];         // 8-bit operation (only 3 low-order bits are used)
+
+    OUT 
+        out[16]; // 16-bit output
+
+    PARTS:
+        // ECR
+        Or16(a=x, b=y, out=orOut);
+        And16(a=x, b=y, out=nandOut1);
+        Not16(in=nandOut1, out=nandOut);
+        Or16(a=x, b=y, out=norOut1);
+        Not16(in=norOut1, out=norOut);
+        And16(a=x, b=y, out=andOut);
+        Add16(a=x, b=y, out=adderOut);
+        Not16(in=y, out=ynegate);
+        Inc16(in=ynegate, out=yinc);
+        Add16(a=x, b=yinc, out=subbyOut);
+        Not16(in=x, out=notx);
+        Not16(in=y, out=noty);
+        Mux8Way16(a=orOut, b=nandOut, c=norOut, d=andOut, e=adderOut, f=subbyOut, g=notx, h=noty, sel=op[0..2], out=out);
+}
