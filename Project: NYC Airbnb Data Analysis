@@ -1,4 +1,4 @@
-# COSC 375 Project written in R for Dr. Beau Christ
+# COSC 375 Project written in R by Drake Nisbet for Dr. Beau Christ
 
 # Load needed libraries
 library("readxl")
