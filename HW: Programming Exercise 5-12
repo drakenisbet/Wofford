@@ -1,0 +1,33 @@
+#
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+
+    int popA, popB, growA, growB;
+
+    cout << "The population of town A: ";
+    cin >> popA;
+    cout << endl << "The population of town B: ";
+    cin >> popB;
+    cout << endl << "The growth rate of town A: ";
+    cin >> growA;
+    cout << endl << "The growth rate of town B: ";
+    cin >> growB;
+    cout << endl;
+
+    int counter = 0;
+
+    while (popA < popB) {
+      popA = popA + (popA * (growA * .01));
+      popB = popB + (popB * (growB * .01));
+      counter++;
+    }
+
+    cout << "Town A's population will surpass Town B in " << counter << " years." << endl;
+    cout << "Town A's population will be " << popA << " compared to Town B's population of " << popB << "." << endl;
+
+    return 0;
+}
