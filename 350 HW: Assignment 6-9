@@ -1,0 +1,44 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+
+using namespace std;
+
+int reverseDigit(int digits);
+
+int main() {
+    
+    int number;
+
+    cout << "Enter an integer to be reversed: ";
+    cin >> number;
+    cout << endl;
+
+    cout << reverseDigit(number) << endl;
+
+    return 0;
+}
+
+int reverseDigit(int digits) {
+
+    string str1 = to_string(digits);
+    string str2 = to_string(digits);
+
+    int length = str1.length();
+
+    while (str1[length - 1] == '0') {
+      length = length - 1;
+    }
+
+    for (int i = 0; i <= length; i++) {
+      str2[i] = str1[length - 1 - i];
+    }
+
+    int reversedDigits = stoi(str2);
+
+    if (digits < 0) {
+      reversedDigits = reversedDigits - (reversedDigits * 2);
+    }
+
+    return reversedDigits;
+}
