@@ -1,0 +1,59 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+#include <string>
+#include <iomanip> 
+
+using namespace std;
+
+int lowIncome(int income);
+double billingStatement(int hourly, int consulting, int incomeLevel);
+
+int main() {
+
+    int income;
+    int hourlyRate;
+    int consultingTime;
+
+    cout << "Enter yearly income: ";
+    cin >> income;
+    cout << endl << "Enter hourly rate: ";
+    cin >> hourlyRate;
+    cout << endl << "Enter total consulting time, in minutes: ";
+    cin >> consultingTime;
+    cout << endl;
+
+    cout << setprecision(2) << fixed;
+    cout << billingStatement(hourlyRate, consultingTime, lowIncome(income)) << endl;
+
+    return 0;
+}
+
+int lowIncome(int income){
+    if (income <= 25000) {
+      return true; // returns 1 if true
+    } else {
+      return false; // returns 0 if false
+    }
+}
+
+double billingStatement(int hourly, int consulting, int incomeLevel) {
+
+    double charges;
+
+    if (incomeLevel == 1) { // low income
+      if (consulting <= 30) {
+        charges = 0;
+      } else {
+        charges = (hourly * .40) * ((consulting - 30) / 60.00);
+      }
+    } else { // NOT low income
+      if (consulting <= 20) {
+        charges = 0;
+      } else {
+        charges = (hourly * .70) * ((consulting - 20) / 60.00);
+      }
+    }
+
+    return charges;
+}
