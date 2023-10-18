@@ -1,0 +1,69 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+char gradeCalc (string score);
+
+int main() {
+    
+    string firstnames [20];
+    string lastnames [20];
+    string testscores [20];
+    char grades [20];
+
+    ifstream myfile;
+    myfile.open("Ch9_Ex2Data.txt");
+    string myline;
+
+    if ( myfile.is_open() ) {
+      for (int i = 1; i <= 20; i++) {
+          getline (myfile, myline);
+          int space = myline.find(" ");
+          firstnames[i-1] = myline.substr(0, space);
+          myline = myline.substr(space + 1, myline.find('\n'));
+          int spacetwo = myline.find(" ");
+          lastnames[i-1] = myline.substr(0, spacetwo);
+          myline = myline.substr(spacetwo + 1, myline.find('\n'));
+          testscores[i-1] = myline;
+          grades[i-1] = gradeCalc(testscores[i-1]);
+      }
+    } else {
+      cout << "Couldn't open file" << endl;
+    }
+
+    myfile.close();
+
+    ofstream outfile;
+    outfile.open("Ch9_Ex2Out.txt");
+    for (int y = 0; y < 20; y++) {
+      outfile << lastnames[y] << ", " << firstnames[y] << " " << testscores[y] << " " << grades[y] << endl;
+    }
+    outfile.close(); 
+
+    return 0;
+}
+
+// user defined functions
+
+char gradeCalc (string score) {
+    char grade;
+
+    int testscore = stoi(score);
+    if (testscore >= 90){ 
+      grade = 'A';
+    } else if (testscore >= 80) {
+      grade = 'B';
+    } else if (testscore >= 70) {
+      grade = 'C';
+    } else if (testscore >= 60) {
+      grade = 'D';
+    } else {
+      grade = 'F';
+    }
+
+    return grade;
+}
