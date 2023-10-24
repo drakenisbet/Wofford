@@ -126,8 +126,8 @@ int main() {
           break;
 
         default:
-            cout << "Invalid input. Program Teminated." << endl;
-            break;
+          cout << "Invalid input. Program Teminated." << endl;
+          break;
 
       }
 
