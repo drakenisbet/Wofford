@@ -1,0 +1,176 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// struct definition
+struct footballPlayerType {
+    string name;
+    string position;
+    int touchdowns;
+    int catches;
+    int passingYards;
+    int receivingYards;
+    int rushingYards;
+};
+
+// user defined function declarations
+void showMenu();
+void getData(ifstream& inFile, footballPlayerType list[], int length);
+void printPlayerData(footballPlayerType list[], int length, int playerNum);
+
+int main() {
+    
+    footballPlayerType bigGiants[10];
+    int numberOfPlayers = 10;
+
+    int choice;
+    string name;
+    int playerNum;
+    int numberTouchdowns;
+    int numberCatches;
+    int numberPassingYards;
+    int numberReceivingYards;
+    int numberRushYards;
+
+    ifstream inFile;
+    ofstream outFile;
+
+    inFile.open("Ch9_Ex7Data.txt");
+
+    if ( !inFile ) {
+      cout << "Input file does not exist. Program terminated." << endl;
+      return 1;
+    }
+
+    getData(inFile, bigGiants, numberOfPlayers);
+
+    do {
+
+      showMenu();
+      cin >> choice;
+
+      if (choice != 2 && choice != 99) {
+        cout << "Enter player name: ";
+        cin >> name;
+        cout << endl;
+
+        for (int y = 0; y < numberOfPlayers - 1; y++) {
+            if (name == bigGiants[y].name) {
+               playerNum = y;
+          }
+        }
+      }
+
+      switch (choice) {
+
+        case 1: // print a single player's data
+          printPlayerData(bigGiants, numberOfPlayers, playerNum);
+         
+          cout << endl;
+          break;
+
+        case 2: // print all the data
+          for (int i = 0; i < numberOfPlayers; i++) {
+            printPlayerData(bigGiants, numberOfPlayers, i);
+            cout << endl;
+          }
+          
+          cout << endl;
+          break;
+
+        case 3: // update tocuhdowns
+          cout << "Enter number of touchdowns: ";
+          cin >> numberTouchdowns;
+          bigGiants[playerNum].touchdowns = bigGiants[playerNum].touchdowns + numberTouchdowns;
+
+          cout << endl;
+          break;
+
+        case 4: // update number of catches
+          cout << "Enter number of catches: ";
+          cin >> numberCatches;
+          bigGiants[playerNum].catches = bigGiants[playerNum].catches + numberCatches;
+
+          cout << endl;
+          break;
+
+        case 5: // update passing yards
+          cout << "Enter number of passing yards: ";
+          cin >> numberPassingYards;
+          bigGiants[playerNum].passingYards = bigGiants[playerNum].passingYards + numberPassingYards;
+
+          cout << endl;
+          break;
+
+        case 6: // update receiving yards
+          cout << "Enter number of receiving yards: ";
+          cin >> numberReceivingYards;
+          bigGiants[playerNum].receivingYards = bigGiants[playerNum].receivingYards + numberReceivingYards;
+
+          cout << endl;
+          break;
+
+        case 7: // update rushing yards
+          cout << "Enter number of rushing yards: ";
+          cin >> numberRushYards;
+          bigGiants[playerNum].rushingYards = bigGiants[playerNum].rushingYards + numberRushYards;
+
+          cout << endl;
+          break;
+
+        case 99: // quit the program
+          break;
+
+        default:
+            cout << "Invalid input. Program Teminated." << endl;
+            break;
+
+      }
+
+    } while (choice != 99);
+
+    char response;
+
+    cout << "Would you like to save data? (Y/N): ";
+    cin >> response;
+    cout << endl;
+
+    inFile.close();
+
+    return 0;
+}
+
+// user defined function definitions
+void showMenu() {
+    cout << "Select one of the following options:" << endl;
+    cout << "1: To print a player's data" << endl;
+    cout << "2: To print the entire data" << endl;
+    cout << "3: To update a player's touchdowns" << endl;
+    cout << "4: To update a player's number of catches" << endl;
+    cout << "5: To update a player's passing yards" << endl;
+    cout << "6: To update a player's receiving yards" << endl;
+    cout << "7: To update a player's rushing yards" << endl;
+    cout << "99: To quit the program" << endl;
+}
+
+void getData(ifstream& inFile, footballPlayerType list[], int length) {
+    for (int i = 0; i < length; i++) {
+        inFile >> list[i].name >> list[i].position >> list[i].touchdowns
+               >> list[i].catches >> list[i].passingYards >> list[i].receivingYards 
+               >> list[i].rushingYards;
+    }
+}
+
+void printPlayerData(footballPlayerType list[], int length, int playerNum) {
+    cout << "Name: " << list[playerNum].name << endl;
+    cout << "Position: " << list[playerNum].position << endl;
+    cout << "Touch Downs: " << list[playerNum].touchdowns << endl;
+    cout << "Number of Catches: " << list[playerNum].catches << endl;
+    cout << "Passing Yards: " << list[playerNum].passingYards << endl;
+    cout << "Receiving Yards: " << list[playerNum].receivingYards << endl;
+    cout << "Rushing Yards: " << list[playerNum].rushingYards << endl;
+}
