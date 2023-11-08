@@ -1,0 +1,113 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// constant variables
+const int NUM_QUESTIONS = 20;
+const int CORRECT_ANSWER_SCORE = 2;
+const int WRONG_ANSWER_SCORE = -1;
+const int NO_ANSWER_SCORE = 0;
+
+// user defined function declarations
+int computeScore(string answerKey, string studentAnswers);
+char computeGrade(double score);
+
+int main() {
+    
+    ifstream infile;
+    infile.open("Ch12_Ex2Data.txt");
+
+    // count the number of students
+    int students = 0;
+    if (infile.is_open()) {
+        string line;
+        while (getline(infile, line)) {
+          students++;
+      } 
+    }
+
+    infile.close();
+    infile.open("Ch12_Ex2Data.txt");
+
+    string myline;
+    string *stuIDs = new string[students];
+    string *stuAnswers = new string[students];
+
+    // assign answer key and student's IDs and test answers to dynamic arrays
+    if ( infile.is_open() ) {
+        for (int i = 0; i < students; i++) {
+            if (getline(infile, myline)) {
+                if (myline[0] == 'T' || myline[0] == 'F') {
+                    stuIDs[i] = "Key";
+                    stuAnswers[i] = myline;
+                } else {
+                    int space = myline.find(" ");
+                    stuIDs[i] = myline.substr(0, space);
+                    string answers = myline.substr(space + 1);
+                    while (answers.length() < 20) {
+                        answers.append(" ");
+                    }
+                    stuAnswers[i] = answers;
+                }
+            } else {
+                cout << "Error reading from file." << endl;
+                break; // Exit the loop on file reading error
+            }
+        }
+    } else {
+        cout << "Couldn't open file" << endl;
+    }
+
+    infile.close();
+
+    // cout answer key and student's IDs, answers, scores, and grades
+    cout << "Key " << stuAnswers[0] << endl;
+    for (int i = 1; i < students; i++) {
+        double studentScore = computeScore(stuAnswers[0], stuAnswers[i]);
+        cout << stuIDs[i] << " " << stuAnswers[i] << " " << studentScore << " " << computeGrade(studentScore) << endl;
+    }
+
+    // free the dynamically allocated memory
+    delete[] stuIDs; 
+    delete[] stuAnswers;
+
+    return 0;
+}
+
+// user defined function definitions
+int computeScore(string answerKey, string studentAnswers) {
+
+    int score = 0;
+
+    for (int i = 0; i < NUM_QUESTIONS; i++) {
+
+        if (studentAnswers[i] == ' ') {
+            score += NO_ANSWER_SCORE;
+        } else if (studentAnswers[i] == answerKey[i]) {
+            score += CORRECT_ANSWER_SCORE;
+        } else {
+            score += WRONG_ANSWER_SCORE;
+        }
+
+    }
+
+    return score;
+}
+
+char computeGrade(double score) {
+    if (score / 40.00 >= .90) {
+        return 'A';
+    } else if (score / 40.00 >= .80) {
+        return 'B';
+    } else if (score / 40.00 >= .70) {
+        return 'C';
+    } else if (score / 40.00 >= .60) {
+        return 'D';
+    } else {
+        return 'F';
+    }
+}
