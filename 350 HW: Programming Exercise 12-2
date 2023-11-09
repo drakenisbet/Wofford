@@ -27,7 +27,7 @@ int main() {
         string line;
         while (getline(infile, line)) {
           students++;
-      } 
+        } 
     }
 
     infile.close();
