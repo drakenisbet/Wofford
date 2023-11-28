@@ -1,0 +1,40 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+
+using namespace std;
+
+// user-defined function declaration
+bool increasingDigits(int n, int lastDigit = 9);
+
+int main() {
+  
+    int userInt;
+    cout << "Enter a positive integer: ";
+    cin >> userInt;
+
+    // using the user-defined fucntion to test the input
+    if ( increasingDigits(userInt) ) {
+        cout << "The digits of " << userInt << " are in increasing order." << endl;
+    } else {
+        cout << "The digits of " << userInt << " are not in increasing order." << endl;
+    }
+
+    return 0;
+}
+
+// user-defined function definition
+bool increasingDigits(int n, int lastDigit) {
+
+    if (n == 0) { // base case, n = 0 or has a single digit
+        return true;
+    }
+
+    int currentDigit = n % 10;
+
+    if (currentDigit >= lastDigit) {
+        return false;
+    } 
+    
+    return increasingDigits(n / 10, currentDigit); // recursive case
+}
