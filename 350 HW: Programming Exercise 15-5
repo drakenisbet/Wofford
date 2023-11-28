@@ -1,0 +1,33 @@
+// COSC 350 HW written in C++ by Drake Nisbet for Dr. Beau Christ
+
+#include <iostream>
+
+using namespace std;
+
+// user defined function declaration
+int intArraySum(int arr[], int size);
+
+int main() {
+    
+    // given arrays
+    int list[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int listB[1] = {5};
+
+    // test cases
+    int sumList = intArraySum(list, 10);
+    int sumListB = intArraySum(listB, 1);
+    cout << "Sum of integers in list: " << sumList << endl;
+    cout << "Sum of integers in listB: " << sumListB << endl;
+
+    return 0;
+}
+
+// user defined function defintion
+int intArraySum(int arr[], int size) {
+
+    if (size == 1) { // base case, array of size = 1
+        return arr[0];
+    } else { // recursive case, array of size > 1
+        return arr[0] + intArraySum(arr + 1, size - 1);
+    }
+}
