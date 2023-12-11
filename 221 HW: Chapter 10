@@ -1,0 +1,174 @@
+// MATH 221 Chapter 10 Homework written in R Markdown by Drake Nisbet for Dr. Matthew Cathey
+---
+title: "Chapter 10 Homework"
+author: "Drake Nisbet"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# confidence interval function
+calculate_ci <- function(p, n) {
+  se <- sqrt(p * (1 - p) / n)
+  z_value <- qnorm(0.975)  # 95% confidence interval
+  lower <- p - z_value * se
+  upper <- p + z_value * se
+  return(c(lower, upper))
+}
+```
+
+# Exercise 12
+
+```{r}
+# given data
+total_ticks = 100
+infected_ticks = 0
+prevalence = 0.02  # 2%
+
+# estimate the proportion of ticks carrying the pathogen
+proportion_infected = infected_ticks / total_ticks
+
+# construct a 95% confidence interval
+confidence_interval = binom.test(infected_ticks, total_ticks)$conf.int
+
+# hypothesis testing
+alpha = 0.01
+p_value = binom.test(infected_ticks, total_ticks, p = prevalence, alternative = "less")$p.value
+```
+
+### a. Provide the entomologist with an estimate of the proportion of ticks of this species that are carrying the pathogen.
+
+I have no idea how to estimate a proportion when, in the only sample we have, there was not a single tick found to be carrying the pathogen. So, my best guess is that the proportion of ticks of this species carrying this pathogen is `r format(round(proportion_infected, 2), nsmall = 2)`.
+
+### b. Construct a 95% confidence interval for the proportion of ticks of this species that are carrying the pathogen.
+
+95% CI [`r format(round(confidence_interval, 3), nsmall = 3)`]
+
+### c. The prevalence of the lyme-associated pathogen in the black-legged tick is 2%. Is the prevalence in the new species of tick less than the prevalence in the black-legged tick?
+
+Due to our p-value of `r p_value`, we must fail to reject the null hypothesis. This means the prevalence in the new tick species is not less than the prevalence in the black-legged tick.
+
+# Exercise 20
+
+```{r}
+# biofeedback data
+biofeedback_success = 560
+biofeedback_total = 1000
+biofeedback_proportion = biofeedback_success / biofeedback_total
+
+# NSAID data
+nsaid_success = 680
+nsaid_total = 1000
+nsaid_proportion = nsaid_success / nsaid_total
+
+# confidence intervals for Biofeedback and NSAID
+biofeedback_ci <- calculate_ci(biofeedback_proportion, biofeedback_total)
+nsaid_ci <- calculate_ci(nsaid_proportion, nsaid_total)
+
+# two-proportion z-test
+p1 <- biofeedback_proportion
+p2 <- nsaid_proportion
+n1 <- biofeedback_total
+n2 <- nsaid_total
+
+p_pooled <- (p1 * n1 + p2 * n2) / (n1 + n2)
+se_diff <- sqrt(p_pooled * (1 - p_pooled) * (1 / n1 + 1 / n2))
+z_stat <- (p1 - p2) / se_diff
+p_value <- 2 * (1 - pnorm(abs(z_stat)))
+
+# confidence interval for the difference
+diff_ci <- c((p1 - p2) - qnorm(0.975) * se_diff, (p1 - p2) + qnorm(0.975) * se_diff)
+```
+
+### a. For both treatments, place 95% confidence intervals on the proportions of patients who experienced a significant reduction in pain.
+
+Biofeedback 95% CI: [`r format(round(biofeedback_ci, 4), nsmall = 4)`], NSAID 95% CI: [`r format(round(nsaid_ci, 4), nsmall = 4)`]
+
+### b. Is there significant evidence (alpha = .05) of a difference in the two treatments relative to the proportions of patients who experienced a significant reduction in pain?
+
+Considering the incredibly p-value produced by the two-proportioned z-test, which is (roughly) `r format(round(p_value, 10), nsmall = 10)` or 0.0000000324, yes. There is significant evidence of a difference in the two treatments relative to the proportions of patients who experienced a significant reduction in pain.
+
+### c. Place a 95% confidence interval on the difference in the two proportions.
+
+Differences 95% CI: [`r format(round(diff_ci, 4), nsmall = 4)`]
+
+# Exercise 29
+
+```{r}
+# observed data
+observed <- c(238, 32, 12, 13, 5)
+total_sample <- 300
+
+# historical proportions
+historical_proportions <- c(0.80, 0.10, 0.05, 0.03, 0.02)
+
+# expected frequencies
+expected <- total_sample * historical_proportions
+
+# chi-squared test
+chi_square_test <- chisq.test(observed, p = historical_proportions)
+
+# print results
+print(chi_square_test)
+```
+
+Since the p-value given by the above chi-squared test is greater than our $\alpha$ value of 0.05, we will fail to reject the null hypothesis because there is not substantial evidence to suggest that there was a change in the historical proportions of defectives.
+
+# Exercise 42
+
+```{r}
+# given problem data
+alpha <- 0.05
+promotion_data <- data.frame(
+  Age_Category = c("30 and Younger", "30-39", "40-49", "50 or Older"),
+  Promoted = c(9, 29, 34, 12),
+  Not_Promoted = c(41, 39, 46, 38)
+)
+
+# Create a matrix from the data
+promotion_matrix <- as.matrix(promotion_data[, c("Promoted", "Not_Promoted")])
+
+# Perform the chi-square test
+chi_square_result <- chisq.test(promotion_matrix)
+```
+
+### a. Provide a graph of the promotion information.
+
+```{r}
+# load needed libraries
+library(ggplot2)
+library(tidyr)
+
+# clean and reshape the data
+promotion_data_long <- pivot_longer(promotion_data, cols = c("Promoted", "Not_Promoted"), names_to = "Promotion_Status", values_to = "Count")
+
+# graph using ggplot2
+ggplot(promotion_data_long, aes(x = Age_Category, y = Count, fill = Promotion_Status)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Firefighter Promotion Decisions by Age",
+       x = "Age Category",
+       y = "Number of Firefighters",
+       fill = "Promotion Status") +
+  scale_fill_manual(values = c("Promoted" = "darkolivegreen3", "Not_Promoted" = "brown4"),
+                    name = "Promotion Decision",
+                    labels = c("Promoted" = "Promoted", "Not_Promoted" = "Not Promoted")) +
+  theme_minimal()
+```
+
+### b. Is the promotion decision for the fireman related to the age of the fireman? Use alpha = .05.
+
+```{r}
+# print the result
+print(chi_square_result)
+```
+The p-value of the chi-squared test shown above suggests that (by being less than our $\alpha$ of 0.05) there *is* significant evidence to reject the null hypothesis and suggest that the promotion decision for the firemen *is* related to age.
+
+### c. What is the population to which your conclusion in part (b) is applicable?
+
+The conclusion would be applicable to the population of firemen in the department in the large city from which the sample was drawn. The city was not given a name in the problem.
+
+### d. What are some other variables, besides age, that needed to be addressed in an age discrimination analysis?
+
+In an age discrimination analysis, you may also want to consider factors such as years of experience, job performance, and relevant qualifications. These variables can help alert researches to potential confounding factors and provide a better understanding of the true nature of the relationship between age and promotion decisions.
