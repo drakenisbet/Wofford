@@ -53,6 +53,7 @@ Here, we see that three groups (A1, A2, and A4 - because their "p adj," or adjus
 # Exercise 15
 
 ### a. Use a Bonferroni t test to determine which pairs of means are significantly different.
+
 ```{r}
 # pairwise t-test with bonferroni correction
 pairwise_result <- pairwise.t.test(weight_data_long$WeightLoss, weight_data_long$Agent, p.adjust.method = "bonferroni")
@@ -66,6 +67,7 @@ The above chart is a chart of p-values between the five groups (A1, A2, A3, A4, 
 **A1 & A3, A1 & S, A2 & S, A3 & A4, A4 $ S** (the same group we got using Tukey's $W$).
 
 ### b. Use Scheffé’s S procedure to determine which pairs of means are significantly different.
+
 ```{r}
 # compute pairwise comparisons with Scheffé correction
 scheffe_result <- lsmeans(anova_result, pairwise ~ Agent, adjust = "scheffe")
