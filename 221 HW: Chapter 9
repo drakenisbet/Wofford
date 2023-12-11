@@ -1,0 +1,87 @@
+// MATH 221 Chapter 9 Homework written in R Markdown by Drake Nisbet for Dr. Matthew Cathey
+---
+title: "Chapter 9 Homework"
+author: "Drake Nisbet"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lsmeans)
+```
+
+# Exercise 13
+```{r}
+# set alpha
+alpha <- 0.05
+
+# problem data
+weight_data <- data.frame(
+  A1 = c(12.4, 10.7, 11.9, 11.0, 12.4, 12.3, 13.0, 12.5, 11.2, 13.1),
+  A2 = c(9.1, 11.5, 11.3, 9.7, 13.2, 10.7, 10.6, 11.3, 11.1, 11.7),
+  A3 = c(8.5, 11.6, 10.2, 10.9, 9.0, 9.6, 9.9, 11.3, 10.5, 11.2),
+  A4 = c(12.7, 13.2, 11.8, 11.9, 12.2, 11.2, 13.7, 11.8, 12.2, 11.7),
+  S = c(8.7, 9.3, 8.2, 8.3, 9.0, 9.4, 9.2, 12.2, 8.5, 9.9)
+)
+
+# clean and reshape data
+weight_data_long <- reshape2::melt(weight_data)
+colnames(weight_data_long) <- c("Agent", "WeightLoss")
+
+# conduct ANOVA test
+anova_result <- aov(WeightLoss ~ Agent, data = weight_data_long)
+
+# print results
+summary(anova_result)
+```
+
+Because of the extremely small p-value (4.16e-08) seen as a result of the ANOVA test, this means that there IS a significant difference present between the groups. Further testing (which is done below in Exercise 14) and analysis is required to determine exactly which groups (A1, A2, etc.) had significant differences though.
+
+# Exercse 14
+
+```{r}
+# conduct post-hoc tests (Tukey's)
+tukey_result <- TukeyHSD(anova_result)
+
+# print results
+print(tukey_result)
+```
+
+Here, we see that three groups (A1, A2, and A4 - because their "p adj," or adjusted p-value, being less than our $\alpha$ of 0.05) have significant differences from the existing agent ($S$). While there is a significant difference present in all three groups, A4 can be said to have the *most* signficant difference because it has the smallest adjsuted p-value of 0.0000003 (seen bottom right of the chart above).
+
+# Exercise 15
+
+### a. Use a Bonferroni t test to determine which pairs of means are significantly different.
+```{r}
+# pairwise t-test with bonferroni correction
+pairwise_result <- pairwise.t.test(weight_data_long$WeightLoss, weight_data_long$Agent, p.adjust.method = "bonferroni")
+
+# print results
+print(pairwise_result)
+```
+
+The above chart is a chart of p-values between the five groups (A1, A2, A3, A4, and S) produced using a Bonferroni t-test. Any of these values less than our $\alpha$ value of 0.05 implies that there is a significant difference between the two groups associated with that cell. For example, the 0.24716 correlation between A1 and A2 is not significant but the 0.00222 correlation between A1 and A3 *is* significant. Applying that to the whole chart, we can see that these are the pairs of means with significant difference between them: 
+
+**A1 & A3, A1 & S, A2 & S, A3 & A4, A4 $ S** (the same group we got using Tukey's $W$).
+
+### b. Use Scheffé’s S procedure to determine which pairs of means are significantly different.
+```{r}
+# compute pairwise comparisons with Scheffé correction
+scheffe_result <- lsmeans(anova_result, pairwise ~ Agent, adjust = "scheffe")
+
+# print results
+print(scheffe_result)
+```
+
+The above chart is a chart of p-values between the five groups (A1, A2, A3, A4, and S) produced using Scheffé's S procedure. Any of these values less than our $\alpha$ value of 0.05 implies that there is a significant difference between the two groups associated with that cell. For example, the 0.2664 correlation between A1 and A2 is not significant but the 0.0071 correlation between A1 and A3 *is* significant. Applying that to the whole chart, we can see that these are the pairs of means with significant difference between them: 
+
+**A1 & A3, A1 & S, A2 & S, A3 & A4, A4 & S** (the same as Tukey's $W$ and Bonferroni's t-test).
+
+### c. Which of the three procedures determined the largest number of significantly different pairs of means? The fewest?
+
+All three tests (Tukey's $W$, Bonferroni's $t$, and Scheffé’s $S$) produced exactly five signifciantly different pairs of means. While their p-values were a little bit (and I mean a *little* bit) different here and there, they managed to not only produce the same number of pairs but managed to produce the exact same five pairs of means too. Those were, again: A1 & A3, A1 & S, A2 & S, A3 & A4, A4 & S.
+
+# Exercise 16
+
+As mentioned briefly in Exercise 14, **the agent used in Group A4 has the most significant difference when compared to S** according to both Tukey (p-value of 0.0000003) and Bonferroni's tests (p-value of 2.8e-07, or 0.00000028). Scheffé's procedure in R does not provide enough information to answer this question because it simlpy says p-value < 0.0001 (which is all you need to know to test significance) for both A4 and A1 - which was the second most different in both of the other two tests. 
