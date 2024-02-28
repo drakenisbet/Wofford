@@ -1,0 +1,54 @@
+# COSC 340 "Project 1" written in Python by Drake Nisbet for Dr. Beau Christ
+
+class DFA:
+    def __init__(self, states, alphabet, start_state, accept_states, transitions):
+        self.states = set(states)
+        self.alphabet = set(alphabet)
+        self.start_state = start_state
+        self.accept_states = set(accept_states)
+        self.transitions = transitions
+
+    # defines a function to process the input that returns "accept" or "reject" 
+    def process_input(self, input_string):
+        current_state = self.start_state
+
+        # reads the input strings and determines a result
+        if (input_string == "@"): # string is empty or "@" - returns start state
+            return "accept" if current_state in self.accept_states else "reject"
+        else:
+            for symbol in input_string:
+                if (current_state, symbol) not in self.transitions:
+                    return "reject"
+                current_state = self.transitions[(current_state, symbol)]
+            return "accept" if current_state in self.accept_states else "reject"
+
+# defines a function to read the dfa file, "dfa.txt"
+def read_dfa_file(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    states = lines[0].strip().split(',')
+    alphabet = lines[1].strip().split(',')
+    start_state = lines[2].strip()
+    accept_states = lines[3].strip().split(',')
+
+    transitions = {}
+    for line in lines[4:]:
+        rule = line.strip().split(',')
+        transitions[(rule[0], rule[1])] = rule[2]
+
+    return DFA(states, alphabet, start_state, accept_states, transitions)
+
+def main():
+    # reads in DFA file using user defined function: read_dfa_file
+    dfa = read_dfa_file("dfa.txt") # read_dfa_file("/Users/nisbetds/Desktop/examples/example1/dfa.txt") - hard coded to test
+
+    # opens and reads input.txt file and writes to output.txt file
+    with open("input.txt", 'r') as input_file, open("output.txt", 'w') as output_file: # open("/Users/nisbetds/Desktop/examples/example1/input.txt", 'r'), open("/Users/nisbetds/Desktop/examples/example1/output.txt", 'w') - hard coded to test
+        for line in input_file:
+            input_string = line.strip()
+            result = dfa.process_input(input_string)
+            output_file.write(result + '\n')
+
+if __name__ == "__main__":
+    main()
