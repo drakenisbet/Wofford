@@ -1,0 +1,50 @@
+"""COSC 351 "Assignment 1" written in Python by Drake Nisbet for Dr. Aaron Garrett"""
+
+def check_valid(numLocations, roads):
+    """This function will check whether or not the city map input is valid."""
+
+    # dictionaries
+    key = {i: set() for i in range(numLocations)}
+    newkey = {i: set() for i in range(numLocations)}
+    valids = {i: set() for i in range(numLocations)}
+
+    # local variables
+    loops = 0
+
+    # creates the base key
+    for i in range(numLocations):
+        key[i].add(i)
+        for a, b in roads:
+            if a == i:
+                key[i].add(b)
+
+    # loops to update the key
+    while loops < numLocations:
+        for i in key:
+            for item in key[i]:
+                newkey[i] = key[i].union(key[item])
+        key = newkey
+        loops = loops + 1
+
+    # creates the answer key
+    for i in range(numLocations):
+        for x in range(numLocations):
+            valids[i].add(x)
+
+    # compares the key and answer key (valids) and returns
+    if key != valids: # checks and returns 
+        return "INVALID"
+    return "VALID"
+
+def main():
+    """
+    You may have as many additional functions above as you like, 
+    but your final solution should be implemented in this main function.
+    Make sure that your submission does not CALL the main function, since
+    that is done within the automated tests.
+    """
+    filename = input().strip()
+    with open(filename, 'r') as file:
+        m, n = map(int, file.readline().split())
+        roads = [tuple(map(int, file.readline().split())) for l in range(n)]
+    print(check_valid(m, roads))
