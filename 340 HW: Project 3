@@ -1,0 +1,80 @@
+"""
+COSC 340 "Project 3" written in Python by Drake Nisbet for Dr. Beau Christ.
+This project simulates an NFA (nondeterministic finite automata) given by the nfa.txt file
+and writes "accept" or "reject" to the outfile.txt file for each input string in the input.txt file.
+"""
+
+class NFA:
+    def __init__(self, states, alphabet, start_state, accept_states, transitions):
+        self.states = set(states)
+        self.alphabet = set(alphabet)
+        self.start_state = start_state
+        self.accept_states = set(accept_states)
+        self.transitions = transitions
+
+    def is_accepting(self, state):
+        """ Checks if state is in accept states and returns boolean result. """
+        return state in self.accept_states
+
+    def get_next_states(self, current_state, symbol, visited = None):
+        """ Considers current state and symbol and returns all possible next states. """
+        next_states = set()
+        if visited is None:
+            visited = set()
+        for transition in self.transitions:
+            if transition[0] == current_state and transition[1] == symbol:
+                next_state = transition[2]
+                if next_state not in visited:
+                    visited.add(next_state)
+                    next_states.add(next_state)
+                    next_states |= self.get_next_states(next_state, '@', visited)
+            elif transition[0] == current_state and transition[1] == '@':
+                next_state = transition[2]
+                if next_state not in visited:
+                    visited.add(next_state)
+                    next_states |= self.get_next_states(next_state, symbol, visited)
+        return next_states
+
+def read_nfa_file(filename):
+    """ Reads the nfa.txt file and returns the NFA information. """
+    with open(filename, 'r') as file:
+        states = file.readline().strip().split(',')
+        alphabet = file.readline().strip().split(',')
+        start_state = file.readline().strip()
+        accept_states = file.readline().strip().split(',')
+        transitions = [line.strip().split(',') for line in file]
+    return NFA(states, alphabet, start_state, accept_states, transitions)
+
+def simulate_nfa(nfa, input_strings):
+    """ Simulates the running of an NFA and returns "accept" or "reject" for each input string. """
+    results = []
+    for input_string in input_strings:
+        current_states = {nfa.start_state} | nfa.get_next_states(nfa.start_state, "@")
+        for symbol in input_string:
+            next_states = set()
+            for state in current_states:
+                next_states = next_states | nfa.get_next_states(state, symbol)
+            current_states = next_states
+        accept = any(nfa.is_accepting(state) for state in current_states)
+        results.append("accept" if accept else "reject")
+    print(results)
+    return results
+
+def main():
+
+    # reads the nfa.txt file into nfa
+    nfa = read_nfa_file('nfa.txt')
+
+    # reads the input.txt file into input_strings
+    with open('input.txt', 'r') as file: 
+        input_strings = [line.strip() for line in file]
+
+    # simulates the NFA and reads accept/reject for each input into results
+    results = simulate_nfa(nfa, input_strings)
+
+    # writes the results to the output.txt file
+    with open('output.txt', 'w') as file:
+        file.write('\n'.join(results))
+
+if __name__ == "__main__":
+    main()
