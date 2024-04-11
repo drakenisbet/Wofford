@@ -1,0 +1,59 @@
+"""COSC 351 "Assignment 2" written in Python by Drake Nisbet for Dr. Aaron Garrett"""
+
+def area(vertices):
+    sum_x = 0
+    sum_y = 0
+    length = len(vertices)
+    lenmo = length - 1
+    for v in range(length):
+        if v == lenmo:
+            sum_x = sum_x + vertices[lenmo][0] * vertices[0][1]
+            sum_y = sum_y + vertices[lenmo][1] * vertices[0][0]
+        else:
+            sum_x = sum_x + vertices[v][0] * vertices[v+1][1]
+            sum_y = sum_y + vertices[v][1] * vertices[v+1][0]
+    area = sum_x - sum_y
+    return abs(area)
+
+def max_area(vertices):
+    total_area = area(vertices)
+    length = len(vertices)
+    solution = 0
+    for n in range(length):
+        switch = True
+        value = 0
+        area_value = 0
+        num_vertices = 2
+        n_one = n + 1
+        while switch is True:
+            if n_one + num_vertices <= length:
+                area_value = area(vertices[n:n_one + num_vertices])
+            else:
+                area_value = area(vertices[n:] + vertices[:(n_one + num_vertices) % length])
+            if area_value <= (total_area / 2):
+                value = area_value
+            else:
+                switch = False
+            num_vertices = num_vertices + 1
+        if value > solution:
+            solution = value
+    return solution
+
+def main():
+    """ You may have as many additional functions above as you like,
+    but your final solution should be implemented in this main function.
+    Make sure that your submission does not CALL the main function, since
+    that is done within the automated tests. """
+    vertices = []
+    with open("office.txt", 'r') as officeFile:
+        for line in officeFile:
+            if len(line.strip()) == 1:
+                c = int(line.strip())
+            else:
+                x, y = line.strip().split()
+                x = int(x)
+                y = int(y)
+                vertices.append([x, y])
+    officeFile.close()
+    solution = max_area(vertices)
+    print(solution)
