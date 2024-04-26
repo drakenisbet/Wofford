@@ -22,7 +22,7 @@ class DPDA:
     def transition(self, symbol):
         ''' This function executes a regular string transition, if possible. '''
         for transition in self.transitions:
-            if transition[0] == self.current_state and transition[1] == symbol and (transition[2] == self.stack[-1] or '@'):
+            if transition[0] == self.current_state and transition[1] == symbol and (transition[2] == self.stack[-1] or transition[2] == '@'):
                 self.current_state = transition[3]
                 if transition[2] != '@':
                     self.stack.pop()
