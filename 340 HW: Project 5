@@ -1,0 +1,110 @@
+"""
+COSC 340 "Project 5" written in Python by Drake Nisbet for Dr. Beau Christ.
+This project was designed to get students acquainted with deterministic pushdown automata (DPDAs) as
+we were tasked with writing a Python program that simulates a DPDA.
+"""
+
+class DPDA:
+    def __init__(self, states, alphabet, stack_alphabet, start_state, accept_states, transitions):
+        self.states = states
+        self.alphabet = alphabet
+        self.stack_alphabet = stack_alphabet
+        self.start_state = start_state
+        self.accept_states = accept_states
+        self.transitions = transitions
+        self.stack = ['$']
+
+    def reset(self):
+        ''' This function clears the machine, used in between simulations. '''
+        self.stack = ['$']
+        self.current_state = self.start_state
+
+    def transition(self, symbol):
+        ''' This function executes a regular string transition, if possible. '''
+        for transition in self.transitions:
+            if transition[0] == self.current_state and transition[1] == symbol and (transition[2] == self.stack[-1] or '@'):
+                self.current_state = transition[3]
+                if transition[2] != '@':
+                    self.stack.pop()
+                if transition[4] != '@':
+                    self.stack.append(transition[4])
+                return True
+        return False
+
+    def empty_transition(self):
+        ''' This function executes an empty string transition, if possible. '''
+        for transition in self.transitions:
+            if transition[0] == self.current_state and transition[1] == '@':
+                self.current_state = transition[3]
+                self.stack.pop()
+                if transition[4] != '@':
+                    self.stack.append(transition[4])
+                return True
+        return False
+
+    def check_transition(self, symbol):
+        ''' This function checks if a regular transition using the given string is possible,
+        without making any changes to the DPDAs state. '''
+        for transition in self.transitions:
+            if transition[0] == self.current_state and transition[1] == symbol and (transition[2] == self.stack[-1] or '@'):
+                return True
+        return False
+
+    def check_empty_transition(self):
+        ''' This function checks if an empty string transition is possible,
+        without making any changes to the DPDAs state. '''
+        for transition in self.transitions:
+            if transition[0] == self.current_state and transition[1] == '@':
+                return True
+        return False
+
+    def simulate(self, string):
+        self.reset()
+        self.empty_transition()
+        for symbol in string:
+            if self.stack == []:
+                return 'reject'
+            if self.check_transition(symbol) == False:
+                self.empty_transition()
+                if self.check_transition(symbol) == False:
+                    return 'reject'
+                self.transition(symbol)
+            else:
+                self.transition(symbol)
+        if self.stack != ['$']:
+            return 'reject'
+        if self.check_empty_transition() == True:
+            self.empty_transition()
+        if self.current_state in self.accept_states:
+            return 'accept'
+        return 'reject'
+        
+def main():
+
+    # read the dpda.txt file and set up the DPDA machine
+    with open('dpda.txt', 'r') as file:
+        states = file.readline().strip().split(',')
+        alphabet = file.readline().strip().split(',')
+        stack_alphabet = file.readline().strip().split(',')
+        start_state = file.readline().strip()
+        accept_states = file.readline().strip().split(',')
+
+        transitions = []
+        for line in file:
+            transition = line.strip().split(',')
+            transitions.append(transition)
+
+    dpda = DPDA(states, alphabet, stack_alphabet, start_state, accept_states, transitions)
+
+    # read the input.txt file
+    with open('input.txt', 'r') as input_file:
+        strings = input_file.readlines()
+
+    # simulate each string and write the result to the output.txt file
+    with open('output.txt', 'w') as output_file:
+        for string in strings:
+            result = dpda.simulate(string.strip())
+            output_file.write(result + '\n')
+
+if __name__ == "__main__":
+    main()
