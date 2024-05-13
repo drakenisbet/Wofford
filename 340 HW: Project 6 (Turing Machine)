@@ -1,0 +1,89 @@
+"""
+COSC 340 "Project 6" written in Python by Drake Nisbet for Dr. Beau Christ.
+This project was designed to get students acquainted with Turing Machines (TM) as
+we were tasked with writing a Python program that simulates a TM.
+"""
+
+class TuringMachine:
+    def __init__(self, states, input_alphabet, tape_alphabet, start_state, transitions):
+        """ Initialize the Turing machine with its states, input alphabet,
+        tape alphabet, start state, and transition rules. """
+        self.states = set(states)
+        self.input_alphabet = set(input_alphabet)
+        self.tape_alphabet = set(tape_alphabet)
+        self.start_state = start_state
+        self.transitions = transitions
+
+    def simulate(self, input_string):
+        """ Simulate the Turing machine with the given input string. """
+        tape = ['_'] + list(input_string) + ['_']
+        current_state = self.start_state
+        head_position = 1 
+
+        while True:
+            if current_state == 'accept':
+                return 'accept'
+            elif current_state == 'reject':
+                return 'reject'
+
+            current_symbol = tape[head_position]
+            if (current_state, current_symbol) not in self.transitions:
+                return 'reject'
+
+            # apply the transition
+            new_state, write_symbol, move_direction = self.transitions[(current_state, current_symbol)]
+            tape[head_position] = write_symbol
+            if move_direction == 'R':
+                head_position += 1
+            elif move_direction == 'L':
+                head_position -= 1
+            current_state = new_state
+
+            # extend the tape, if necessary
+            if head_position == len(tape):
+                tape.append('_')
+            elif head_position == -1:
+                tape.insert(0, '_')
+
+    def parse_transition(transition):
+        """ Parse the transition rule from its string representation. """
+        transition = transition.strip().split(',')
+        return tuple(transition[:2]), transition[2], transition[3:]
+
+def parse_tm_file(filename):
+    """ Parse the Turing machine description from the 'tm.txt' file. """
+    with open(filename, 'r') as file:
+        states = file.readline().strip().split(',')
+        input_alphabet = file.readline().strip().split(',')
+        tape_alphabet = file.readline().strip().split(',')
+        start_state = file.readline().strip()
+        transitions = {}
+        for line in file:
+            if line.strip():
+                transition = line.strip().split(',')
+                current_state = transition[0]
+                current_symbol = transition[1]
+                write_symbol = transition[2]
+                new_state = transition[3]
+                move_direction = transition[4]
+                transitions[(current_state, current_symbol)] = (new_state, write_symbol, move_direction)
+    return TuringMachine(states, input_alphabet, tape_alphabet, start_state, transitions)
+
+def main():
+    # parse tm.txt to construct turing machine
+    tm = parse_tm_file('tm.txt')
+
+    # read input strings from input.txt
+    input_strings = []
+    with open('input.txt', 'r') as file:
+        for line in file:
+            input_strings.append(line.strip())
+
+    # simulate each input string and write results to output.txt
+    with open('output.txt', 'w') as file:
+        for input_string in input_strings:
+            result = tm.simulate(input_string)
+            file.write(result + '\n')
+
+if __name__ == '__main__':
+    main()
